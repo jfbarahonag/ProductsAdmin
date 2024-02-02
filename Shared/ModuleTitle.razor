@@ -1,7 +1,8 @@
-<h1 style="color: red;">@title</h1>
+<h1>@Title</h1>
 
 @code
 {
   [Parameter]
-  public string? title { get; set; }
+  [EditorRequired]
+  public string Title { get; set; }
 }
