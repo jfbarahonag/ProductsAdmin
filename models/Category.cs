@@ -1,4 +1,4 @@
-namespace BlazorApp.models;
+namespace BlazorApp.Models;
 
 public class Category
 {

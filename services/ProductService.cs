@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using BlazorApp.models;
+using BlazorApp.Models;
 
-namespace BlazorApp.services;
+namespace BlazorApp.Services;
 
 public class ProductService : IProductService
 {
