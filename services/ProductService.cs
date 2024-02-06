@@ -4,7 +4,7 @@ using BlazorApp.models;
 
 namespace BlazorApp.services;
 
-public class ProductService
+public class ProductService : IProductService
 {
   private readonly HttpClient _client;
 
@@ -19,7 +19,8 @@ public class ProductService
   public async Task<List<Product>> Get()
   {
     var response = await _client.GetAsync("v1/products");
-    return await JsonSerializer.DeserializeAsync<List<Product>>(await response.Content.ReadAsStreamAsync()) ?? [];
+    var content = await response.Content.ReadAsStringAsync();
+    return JsonSerializer.Deserialize<List<Product>>(content, _options) ?? [];
   }
 
   public async Task<Product?> Add(Product newProduct)
@@ -43,4 +44,15 @@ public class ProductService
 
     return response.IsSuccessStatusCode;
   }
+}
+
+public interface IProductService
+{
+  Task<List<Product>> Get();
+
+  Task<Product?> Add(Product newProduct);
+
+  Task<Product?> Update(int productId, Product product);
+
+  Task<bool> Remove(int productId);
 }
