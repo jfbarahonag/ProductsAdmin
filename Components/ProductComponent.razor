@@ -1,0 +1,26 @@
+@using BlazorApp.Models
+
+@if(Product is not null)
+{
+  <div class="card">
+    <img class="card-img-top" src="@Product.Images[0]" alt="product-@Product.Id" loading="lazy" width="270" />
+    <div class="card-body">
+      <h4><b>@Product.Title</b></h4>
+      <p>@Product.Price?.ToString("C")</p>
+      @* <button
+      title="Delete"
+      class="btn btn-danger btn-delete"
+      onclick="@(() => Delete(product))"
+      >
+      Delete
+      </button> *@
+    </div>
+  </div>
+}
+
+@code
+{
+  [Parameter]
+  [EditorRequired]
+  public Product? Product { get; set; }
+}
