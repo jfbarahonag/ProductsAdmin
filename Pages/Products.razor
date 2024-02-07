@@ -10,15 +10,6 @@
 
 <ModuleTitle Title="Products" />
 
-<style>
-  .products-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 240px);
-    grid-auto-rows: auto;
-    grid-gap: 1rem;
-  }
-</style>
-
 @if (products is null || products.Count == 0)
 {
   <h1>No hay productos en la lista</h1>
@@ -28,7 +19,7 @@ else
   <div class="products-container">
     @foreach(var product in products)
     {
-      <ProductComponent Product="@product" />
+      <ProductCardComponent Product="@product" />
     }
   </div>
 }
