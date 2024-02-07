@@ -12,7 +12,7 @@ public class CategoryService : ICategoryService
     public CategoryService(HttpClient client, JsonSerializerOptions options)
     {
         _client = client;
-        _options = options;
+        _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     public async Task<List<Category>> Get()

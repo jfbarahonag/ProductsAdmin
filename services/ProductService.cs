@@ -10,10 +10,10 @@ public class ProductService : IProductService
 
   private readonly JsonSerializerOptions _options;
 
-  public ProductService(HttpClient client, JsonSerializerOptions options)
+  public ProductService(HttpClient client)
   {
     _client = client;
-    _options = options;
+    _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };;
   }
 
   public async Task<List<Product>> Get()
