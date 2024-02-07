@@ -1,0 +1,58 @@
+@using BlazorApp.Services
+@using BlazorApp.Models
+
+@page "/products"
+@inject ILogger<Products> logger;
+@inject IProductService productService;
+
+<PageTitle>Products</PageTitle>
+
+<ModuleTitle Title="Products" />
+
+@if (products is null || products.Count == 0)
+{
+  <h1>No hay productos en la lista</h1>
+}
+else
+{
+  <div class="products-container">
+    @foreach(var product in products)
+    {
+      <div class="card">
+        <img
+          class="card-img-top"
+          src="@product.Images[0]" 
+          alt="product-@product.Id"
+          loading="lazy" 
+          width="270"
+        />
+        <div class="card-body">
+          <h4><b>@product.Title</b></h4>
+          <p>@product.Price?.ToString("C")</p>
+          @* <button
+            title="Delete"
+            class="btn btn-danger btn-delete"
+            onclick="@(() => Delete(product))"
+          >
+            Delete
+          </button> *@
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@code
+{
+  private List<Product> products = [];
+
+  protected override async Task OnInitializedAsync()
+  {
+    products = await GetProducts();
+  }
+
+  private async Task<List<Product>> GetProducts()
+  {
+    return await productService.Get();
+  }
+}
