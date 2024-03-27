@@ -1,0 +1,29 @@
+@using BlazorApp.Services
+@using BlazorApp.Models
+
+@page "/add-product"
+@inject IProductService productService;
+@inject ICategoryService categoryService;
+@inject NavigationManager navigationManager;
+
+<PageTitle>Add new product</PageTitle>
+<ModuleTitle Title="Add Title" />
+
+<button
+  class="btn btn-dark" 
+  @onclick="@(() => navigationManager.NavigateTo("/products"))">
+  Go to products
+</button>
+<EditForm Model="@product">
+  <div class="row">
+    <div class="col-8 form-group">
+      <label for="title" class="col-form-label">Title</label>
+      <InputText id="title" @bind-Value="product.Title" required class="form-control" />
+    </div>
+  </div>
+</EditForm>
+
+@code
+{
+  private Product product = new();
+}
