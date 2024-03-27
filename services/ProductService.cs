@@ -13,7 +13,7 @@ public class ProductService : IProductService
   public ProductService(HttpClient client)
   {
     _client = client;
-    _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };;
+    _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
   }
 
   public async Task<List<Product>> Get()
