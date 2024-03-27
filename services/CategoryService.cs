@@ -9,7 +9,7 @@ public class CategoryService : ICategoryService
     
     private readonly JsonSerializerOptions _options;
     
-    public CategoryService(HttpClient client, JsonSerializerOptions options)
+    public CategoryService(HttpClient client)
     {
         _client = client;
         _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
