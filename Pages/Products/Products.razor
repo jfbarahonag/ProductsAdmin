@@ -6,7 +6,6 @@
 @inject ILogger<Products> logger;
 @inject IProductService productService;
 @inject NavigationManager navigationManager;
-@inject IJSRuntime jsruntime;
 
 <PageTitle>Products</PageTitle>
 
@@ -25,7 +24,7 @@ else
   <div class="products-container">
     @foreach (var product in products)
     {
-      <ProductCardComponent Product="@product" Delete="@(async () => await DeleteProduct(product))" />
+      <ProductCardComponent Product="@product" />
     }
   </div>
 }
@@ -42,16 +41,5 @@ else
   private async Task<List<Product>> GetProducts()
   {
     return await productService.Get();
-  }
-
-  private async Task DeleteProduct(Product product)
-  {
-    if (!await jsruntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove {product.Title}?"))
-      return;
-
-    Console.WriteLine($"Antes -> {products.Count}");
-    await productService.Remove(product.Id);
-    products = await GetProducts();
-    Console.WriteLine($"Despues -> {products.Count}");
   }
 }

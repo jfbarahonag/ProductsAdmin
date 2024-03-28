@@ -1,4 +1,9 @@
 @using BlazorApp.Models
+@using BlazorApp.Services
+
+@inject IProductService productService;
+@inject IJSRuntime jsruntime;
+@inject ILogger<ProductCardComponent> _logger;
 
 @if (Product is not null)
 {
@@ -7,8 +12,10 @@
     <div class="card-body">
       <h4><b>@Product.Title</b></h4>
       <p>@Product.Price?.ToString("C")</p>
+    </div>
+    <div class="card-footer">
       <button title="Delete" class="btn btn-danger btn-delete" 
-        onclick="@InvokeDelete">
+        onclick="@(() => DeleteProduct(Product))">
         Delete
       </button>
     </div>
@@ -21,11 +28,14 @@
   [EditorRequired]
   public Product? Product { get; set; }
 
-  [Parameter, EditorRequired]
-  public Action? Delete { get; set; }
-
-  private void InvokeDelete()
+  private async Task DeleteProduct(Product product)
   {
-    Delete?.Invoke();
+    if (product is null) return;
+
+    if (!await jsruntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove {product.Title}?"))
+      return;
+    
+    var response = await productService.Remove(product.Id);
+    _logger.LogInformation($"Product {product.Title} {(response == true ? "":"NOT")} Removed");
   }
 }
