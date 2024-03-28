@@ -44,13 +44,25 @@
     <div class="row">
       <div class="form-group">
         <label for="description" class="col-form-label">Description</label>
-        <InputTextArea
-          rows="10"
-          id="description" 
-          @bind-Value="Product.Description" 
-          class="form-control" 
-        />
+        <InputTextArea rows="10" id="description" @bind-Value="Product.Description" class="form-control" />
       </div>
+    </div>
+    <div class="row">
+      @* @foreach (var image in Product.Images) *@
+      @for (int idx = 0; idx < Imgs.Count(); idx++)
+      {
+        int index = idx;
+        var x = $"image-{index}";
+        <div class="form-group">
+          <label for="@x">@x</label>
+          <InputText
+            id="@x"
+            class="form-control"
+            @bind-Value="Imgs[index]" 
+            @oninput="((e) => HandleInputChange(e, index))"
+          />
+        </div>
+      }
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
   </EditForm>
@@ -62,6 +74,7 @@
   public string? Id { get; set; }
   private Product Product = new();
   private List<Category> Categories = [];
+  private string[] Imgs = [];
 
   protected override async Task OnInitializedAsync()
   {
@@ -73,6 +86,8 @@
     Product = p;
     Product.CategoryId = Product.Category.Id;
 
+    Imgs = p.Images;
+
     Categories = await categoryService.Get();
   }
 
@@ -80,7 +95,12 @@
   {
     if (Product.CategoryId <= 0) return;
 
+    Product.Images = Imgs;
     await productService.Update(Product.Id, Product);
     navigationManager.NavigateTo("/products");
+  }
+
+  private void HandleInputChange(ChangeEventArgs e, int index)
+  {
   }
 }
