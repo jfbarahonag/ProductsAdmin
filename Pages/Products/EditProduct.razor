@@ -48,8 +48,7 @@
       </div>
     </div>
     <div class="row">
-      @* @foreach (var image in Product.Images) *@
-      @for (int idx = 0; idx < Imgs.Count(); idx++)
+      @for (int idx = 0; idx < Product.Images.Count(); idx++)
       {
         int index = idx;
         var x = $"image-{index}";
@@ -58,8 +57,7 @@
           <InputText
             id="@x"
             class="form-control"
-            @bind-Value="Imgs[index]" 
-            @oninput="((e) => HandleInputChange(e, index))"
+            @bind-Value="Product.Images[index]" 
           />
         </div>
       }
@@ -74,7 +72,6 @@
   public string? Id { get; set; }
   private Product Product = new();
   private List<Category> Categories = [];
-  private string[] Imgs = [];
 
   protected override async Task OnInitializedAsync()
   {
@@ -86,8 +83,6 @@
     Product = p;
     Product.CategoryId = Product.Category.Id;
 
-    Imgs = p.Images;
-
     Categories = await categoryService.Get();
   }
 
@@ -95,12 +90,7 @@
   {
     if (Product.CategoryId <= 0) return;
 
-    Product.Images = Imgs;
     await productService.Update(Product.Id, Product);
     navigationManager.NavigateTo("/products");
-  }
-
-  private void HandleInputChange(ChangeEventArgs e, int index)
-  {
   }
 }
