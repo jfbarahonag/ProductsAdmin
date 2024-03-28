@@ -1,0 +1,86 @@
+@using BlazorApp.Services
+@using BlazorApp.Models
+
+@page "/products/edit/{Id}"
+
+@inject IProductService productService;
+@inject ICategoryService categoryService;
+@inject NavigationManager navigationManager;
+
+<PageTitle>Edit product</PageTitle>
+<ModuleTitle Title="Edit product" />
+
+<button class="btn btn-dark" @onclick="@(() => navigationManager.NavigateTo("/products"))">
+  Go to products
+</button>
+@if (Product is not null && Product.Category is not null)
+{
+  <EditForm Model="@Product" OnSubmit="@Save">
+    <div class="row">
+      <div class="form-group col-md-6">
+        <label for="id">Product Id</label>
+        <InputText id="id" @bind-Value="Id" class="form-control" disabled />
+      </div>
+      <div class="form-group col-md-6">
+        <label for="title">Title</label>
+        <InputText id="title" @bind-Value="Product.Title" class="form-control" />
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group col-md-6">
+        <label for="price">Price</label>
+        <InputNumber min="1" id="price" @bind-Value="Product.Price" class="form-control" />
+      </div>
+      <div class="form-group col-md-6">
+        <label for="category">Category</label>
+        <InputSelect id="category" @bind-Value="Product.CategoryId" class="form-control">
+          @foreach (var c in Categories)
+          {
+            <option value="@c.Id">@c.Name</option>
+          }
+        </InputSelect>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label for="description" class="col-form-label">Description</label>
+        <InputTextArea
+          rows="10"
+          id="description" 
+          @bind-Value="Product.Description" 
+          class="form-control" 
+        />
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+  </EditForm>
+}
+
+@code
+{
+  [Parameter]
+  public string? Id { get; set; }
+  private Product Product = new();
+  private List<Category> Categories = [];
+
+  protected override async Task OnInitializedAsync()
+  {
+    if (string.IsNullOrEmpty(Id) || !int.TryParse(Id, out int res)) return;
+
+    var p = await productService.GetById(int.Parse(Id));
+    if (p is null || p.Category is null) return;
+
+    Product = p;
+    Product.CategoryId = Product.Category.Id;
+
+    Categories = await categoryService.Get();
+  }
+
+  private async Task Save()
+  {
+    if (Product.CategoryId <= 0) return;
+
+    await productService.Update(Product.Id, Product);
+    navigationManager.NavigateTo("/products");
+  }
+}
