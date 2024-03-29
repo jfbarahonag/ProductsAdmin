@@ -6,6 +6,7 @@
 @inject IProductService productService;
 @inject ICategoryService categoryService;
 @inject NavigationManager navigationManager;
+@inject IToastService toastService;
 
 <PageTitle>Edit product</PageTitle>
 <ModuleTitle Title="Edit product" />
@@ -90,7 +91,17 @@
   {
     if (Product.CategoryId <= 0) return;
 
-    await productService.Update(Product.Id, Product);
+    var response = await productService.Update(Product.Id, Product);
+
+    var message = response is not null
+        ? $"Product {Product.Title} successfully updated."
+        : $"Product {Product.Title} could not be updated.";
+    
+    toastService.ShowToast(
+      response is not null ? ToastLevel.Success : ToastLevel.Error,
+      message
+    );
+
     navigationManager.NavigateTo("/products");
   }
 }

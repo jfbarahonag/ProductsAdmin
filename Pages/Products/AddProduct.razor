@@ -5,7 +5,7 @@
 @inject IProductService productService;
 @inject ICategoryService categoryService;
 @inject NavigationManager navigationManager;
-@inject ILogger<AddProduct> logger;
+@inject IToastService toastService;
 
 <PageTitle>Add new product</PageTitle>
 <ModuleTitle Title="Add new product" />
@@ -15,17 +15,17 @@
   @onclick="@(() => navigationManager.NavigateTo("/products"))">
   Go to products
 </button>
-<EditForm Model="@product" OnSubmit="@Save">
+<EditForm Model="@Product" OnSubmit="@Save">
   <div class="row">
     <div class="col form-group">
       <label for="title" class="col-form-label">Title</label>
-      <InputText id="title" @bind-Value="product.Title" required class="form-control" />
+      <InputText id="title" @bind-Value="Product.Title" required class="form-control" />
     </div>
   </div>
   <div class="row">
     <div class="col form-group">
       <label for="category" class="col-form-label">Category</label>
-      <InputSelect id="category" @bind-Value="product.CategoryId" class="form-control">
+      <InputSelect id="category" @bind-Value="Product.CategoryId" class="form-control">
         <option disabled hidden value="0">Select category</option>
         @foreach(var c in categries)
         {
@@ -37,19 +37,19 @@
   <div class="row">
     <div class="col form-group">
       <label for="price" class="col-form-label">Price</label>
-      <InputNumber min="1" id="price" @bind-Value="product.Price" required class="form-control" />
+      <InputNumber min="1" id="price" @bind-Value="Product.Price" required class="form-control" />
     </div>
   </div>
   <div class="row">
     <div class="col form-group">
       <label for="image" class="col-form-label">Image (URL)</label>
-      <InputText id="image" @bind-Value="product.Image" required class="form-control" />
+      <InputText id="image" @bind-Value="Product.Image" required class="form-control" />
     </div>
   </div>
   <div class="row">
     <div class="col form-group">
       <label for="description" class="col-form-label">Description</label>
-      <InputTextArea id="description" @bind-Value="product.Description" required class="form-control" />
+      <InputTextArea id="description" @bind-Value="Product.Description" required class="form-control" />
     </div>
   </div>
   <hr />
@@ -58,7 +58,7 @@
 
 @code
 {
-  private Product product = new();
+  private Product Product = new();
   private List<Category> categries = [];
 
   protected override async Task OnInitializedAsync()
@@ -68,12 +68,24 @@
 
   private async Task Save()
   {
-    product.Images = [product.Image];
-    logger.LogInformation(product.ToString());
+    if (
+      string.IsNullOrEmpty(Product.Image) ||
+      Product.CategoryId <= 0
+    ) return;
+
+    Product.Images = [Product.Image];
+        
+    var response = await productService.Add(Product);
+
+    var message = response is not null
+        ? $"Product {Product.Title} successfully added."
+        : $"Product {Product.Title} could not be added.";
     
-    if(product.CategoryId <= 0) return;
-    
-    await productService.Add(product);
+    toastService.ShowToast(
+      response is not null ? ToastLevel.Success : ToastLevel.Error,
+      message
+    );
+
     navigationManager.NavigateTo("/products");
   }
 }
