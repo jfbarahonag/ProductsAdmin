@@ -77,15 +77,17 @@
         
     var response = await productService.Add(Product);
 
-    var message = response is not null
+    var successful = response is not null;
+
+    var message = successful
         ? $"Product {Product.Title} successfully added."
         : $"Product {Product.Title} could not be added.";
     
     toastService.ShowToast(
-      response is not null ? ToastLevel.Success : ToastLevel.Error,
+      successful ? ToastLevel.Success : ToastLevel.Error,
       message
     );
 
-    navigationManager.NavigateTo("/products");
+    if (successful) navigationManager.NavigateTo("/products");
   }
 }
